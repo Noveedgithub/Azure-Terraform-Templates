@@ -30,7 +30,7 @@ resource "azurerm_network_security_group" "this" {
   tags = var.tags
 }
 
-#Network Interface Card
+# Network Interface Card
 resource "azurerm_network_interface" "this" {
   name                = "${var.vm_name}-nic"
   location            = var.location
@@ -88,4 +88,5 @@ resource "azurerm_linux_virtual_machine" "this" {
   }
 
   tags = var.tags
+
 }
