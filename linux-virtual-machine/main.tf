@@ -65,15 +65,10 @@ resource "azurerm_linux_virtual_machine" "this" {
     azurerm_network_interface.this.id
   ]
 
-  admin_ssh_key {
-    username   = var.admin_username
-    public_key = var.ssh_public_key
-  }
+  custom_data = base64encode(var.cloud_init)
 
-  os_disk {
-    name                 = "${var.vm_name}-osdisk"
-    caching              = "ReadWrite"
-    storage_account_type = "Standard_LRS"
+  identity {
+    type = "SystemAssigned"
   }
 
   source_image_reference {
@@ -82,11 +77,5 @@ resource "azurerm_linux_virtual_machine" "this" {
     sku       = "22_04-lts"
     version   = "latest"
   }
-
-  identity {
-    type = "SystemAssigned"
-  }
-
-  tags = var.tags
-
 }
+

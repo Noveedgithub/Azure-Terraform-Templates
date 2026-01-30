@@ -35,3 +35,9 @@ variable "tags" {
   default     = {}
 
 }
+
+variable "cloud_init" {
+  description = "cloud-init script to run on VM first boot"
+  type        = string
+  default     = ""
+}
