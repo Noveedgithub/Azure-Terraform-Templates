@@ -1,4 +1,4 @@
-ariable "vm_name" {
+variable "vm_name" {
   type        = string
   description = "Name of the virtual machine"
 }
@@ -33,4 +33,5 @@ variable "ssh_public_key" {
 variable "tags" {
   type        = map(string)
   default     = {}
+
 }
