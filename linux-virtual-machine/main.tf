@@ -1,3 +1,14 @@
+# Generate a keypair only when the caller does not provide a public key.
+resource "tls_private_key" "this" {
+  count     = trimspace(var.ssh_public_key) == "" ? 1 : 0
+  algorithm = "RSA"
+  rsa_bits  = 4096
+}
+
+locals {
+  effective_ssh_public_key = trimspace(var.ssh_public_key) != "" ? trimspace(var.ssh_public_key) : tls_private_key.this[0].public_key_openssh
+}
+
 # Public IP Address
 resource "azurerm_public_ip" "this" {
   name                = "${var.vm_name}-pip"
@@ -59,13 +70,24 @@ resource "azurerm_linux_virtual_machine" "this" {
   resource_group_name = var.resource_group_name
   size                = var.vm_size
 
-  admin_username = var.admin_username
+  admin_username                  = var.admin_username
+  disable_password_authentication = true
 
   network_interface_ids = [
     azurerm_network_interface.this.id
   ]
 
   custom_data = base64encode(var.cloud_init)
+
+  admin_ssh_key {
+    username   = var.admin_username
+    public_key = local.effective_ssh_public_key
+  }
+
+  os_disk {
+    caching              = "ReadWrite"
+    storage_account_type = "Standard_LRS"
+  }
 
   identity {
     type = "SystemAssigned"
